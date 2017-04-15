@@ -3,8 +3,10 @@ package main
 import (
 	"errors"
 	"flag"
+	"log"
 	"net/http"
 	"strings"
+	"encoding/json"
 	"sync"
 )
 
@@ -25,7 +27,7 @@ type reqError struct {
 
 type gameList struct {
 	games map[int]string
-	mux sync.Mutex
+	mux   sync.Mutex
 }
 
 type reqHandler func(http.ResponseWriter, *http.Request) *reqError
@@ -74,14 +76,20 @@ func handler(resWriter http.ResponseWriter, reqHttp *http.Request) *reqError {
 	}
 
 	for i := range players {
-		go func() {
-
-		}
+		go func(steamId string) {
+			resp, err := http.Get("https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + config.APIKey + "&steamid=" + steamId + "&format=json")
+			if err != nil {
+				log.Println(err.Error())
+				return
+			}
+			json.
+		}(players[i])
 	}
 }
 
 func (fn reqHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if e := fn(w, r); e != nil { // e is *appError, not os.Error
 		http.Error(w, e.Message, e.Code) // Serve an error message
+		log.Println("HTTP", e.Code, e.Message)
 	}
 }
