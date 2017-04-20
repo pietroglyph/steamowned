@@ -1,5 +1,5 @@
 # steamowned
-Check what games a subset of an arbitrary amount of steam users share... concurrently... with a bloom filter...
+Check what games an arbitrary number of steam users share... concurrently... with a bloom filter...
 
 ## Usage
 1. Install Go
