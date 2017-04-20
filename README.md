@@ -9,6 +9,9 @@ Check what games a subset of an arbitrary amount of steam users share... concurr
 $ git clone https://github.com/pietroglyph/steamowned
 $ cd steamowned
 $ go install
-$ cd $GOPATH/bin/steamowned -api-key [YOUR STEAM API KEY]
+$ $GOPATH/bin/steamowned -api-key [YOUR STEAM API KEY]
 ```
 4. Point your browser to http://127.0.0.1?players=[STEAMID64]|[ANOTHER STEAMID64]
+## TODO
+* Human readable names for games
+* A slick web interface of some sort
