@@ -51,6 +51,7 @@ func init() {
 func main() {
 	http.Handle("/", reqHandler(handler))
 	bind := fmt.Sprintf("%s:%s", config.Host, config.Port)
+	log.Println("Listening on", bind)
 	if !config.EnableTLS {
 		err = http.ListenAndServe(bind, nil)
 		if err != nil {
