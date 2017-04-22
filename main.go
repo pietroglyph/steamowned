@@ -44,7 +44,7 @@ func init() {
 	flag.BoolVar(&config.EnableTLS, "tls", false, "enable serving with TLS (https)")
 	flag.StringVar(&config.TLSCertPath, "tls-cert", "/cert.pem", "path to certificate file")
 	flag.StringVar(&config.TLSKeyPath, "tls-key", "/key.pem", "path to private key for certificate")
-	flag.StringVar(&config.APIKey, "api-key", "XXXXXXXXXXXXXXXXX", "steam api key") // If not specified the API will return a 403 (XXXXXXXXXXXXXXXXX is not a valid API key)
+	flag.StringVar(&config.APIKey, "api-key", "XXXXXXXXXXXXXXXXX", "steam api key") // If not specified the API will return a 403 (XXXXXXXXXXXXXXXXX is not a valid API key, obviously)
 	flag.Parse()                                                                    // Parse the rest of the flags
 }
 
@@ -77,11 +77,11 @@ func handler(resWriter http.ResponseWriter, reqHttp *http.Request) *reqError {
 	if reqHttp.URL.Query().Get("players") != "" {
 		players = strings.Split(reqHttp.URL.Query().Get("players"), "|")
 	} else {
-		return &reqError{errors.New("Invalid query parameter"), "Invalid query paramter", 400}
+		return &reqError{errors.New("Invalid query parameter"), "Invalid query parameter", 400}
 	}
 
 	var games gameList                 // Holds the mutex and map of games
-	games.games = make(map[int]string) // Initalize the map
+	games.games = make(map[int]string) // Initialize the map
 	for i := range players {
 		wg.Add(1) // Add for each goroutine made
 		go func(steamId string, glist gameList) {
@@ -117,9 +117,13 @@ func handler(resWriter http.ResponseWriter, reqHttp *http.Request) *reqError {
 		}(players[i], games)
 	}
 	wg.Wait()
+	// This isn't the prettiest or most configurable/extendable thing, and I should use another web page and wrap this in json and make ajax calls or something
+	// But I really don't feel like doing JavaScript today.
+	fmt.Fprint(resWriter, "<!DOCTYPE html><html lang='en'><head><title>steamowned</title><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u' crossorigin='anonymous'></head><body><h1>steamowned</h1><br>")
 	for i := range games.games {
-		fmt.Fprint(resWriter, games.games[i], " ")
+		fmt.Fprint(resWriter, "<img src='http://cdn.akamai.steamstatic.com/steam/apps/", games.games[i], "/header.jpg'><img/><br>")
 	}
+	fmt.Fprint(resWriter, "</body></html>")
 	return nil // Nothing went wrong
 }
 
